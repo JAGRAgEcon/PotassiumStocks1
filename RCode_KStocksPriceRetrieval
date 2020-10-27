@@ -1,0 +1,48 @@
+install.packages(c("quantmod","rugarch","rmgarch"))# only needed in case you have not yet installed these packages
+library(quantmod)
+library(rugarch)
+library(rmgarch)
+
+startDate = as.Date("2008-09-01")
+endDate = as.Date("2019-03-13")
+
+getSymbols("NTR", from = startDate, to = endDate)
+na.omit(NTR)
+View(NTR)
+summary(NTR)
+sapply(NTR, var, na.rm=TRUE)
+
+install.packages("xlsx")
+library(xlsx)
+write.xlsx(NTR, "C:/filePath/FileName.xlsx")
+
+getSymbols("IPI", from = startDate, to = endDate)
+na.omit(IPI)
+View(IPI)
+summary(IPI)
+sapply(IPI, var, na.rm=TRUE)
+
+install.packages("xlsx")
+library(xlsx)
+write.xlsx(IPI, "C:/filePath/FileName.xlsx")
+
+getSymbols("MOS", from = startDate, to = endDate)
+na.omit(MOS)
+View(MOS)
+summary(MOS)
+sapply(MOS, var, na.rm=TRUE)
+
+install.packages("xlsx")
+library(xlsx)
+write.xlsx(MOS, "C:/filePath/FileName.xlsx")
+
+
+getSymbols("SQM", from = startDate, to = endDate)
+na.omit(SQM)
+View(SQM)
+summary(SQM)
+sapply(SQM, var, na.rm=TRUE)
+
+install.packages("xlsx")
+library(xlsx)
+write.xlsx(SQM, "C:/filePath/FileName.xlsx")
