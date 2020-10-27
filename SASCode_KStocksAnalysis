@@ -1,0 +1,368 @@
+PROC IMPORT OUT= WORK.try1 
+            DATAFILE= "C:\filePath/FileName.xlsx" 
+            DBMS=EXCEL REPLACE;
+     RANGE="AllPrices$"; 
+     GETNAMES=YES;
+     MIXED=NO;
+     SCANTEXT=YES;
+     USEDATE=YES;
+     SCANTIME=YES;
+RUN;
+/*From laptop*/
+PROC IMPORT OUT= WORK.try1
+            DATAFILE= "C:\filePath/FileName.xlsx" 
+            DBMS=EXCEL REPLACE;
+     RANGE="AllPrices$"; 
+     GETNAMES=YES;
+     MIXED=NO;
+     SCANTEXT=YES;
+     USEDATE=YES;
+     SCANTIME=YES;
+RUN;
+/*diagnostics*/
+data try1;
+set try1;
+ if week=470 then delete;
+ if week=376 then delete;
+run;
+proc means data=try1;
+run;
+proc reg data=try1 simple;
+model POTNTR_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled Week;
+plot POTNTR_lnreturns*Week;
+run;
+proc reg data=try1 simple;
+model IPI_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled Week;
+plot IPI_lnreturns*Week;
+run;
+proc reg data=try1 simple;
+model MOS_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled Week;
+plot MOS_lnreturns*Week;
+run;
+proc reg data=try1 simple;
+model SQM_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled Week;
+plot SQM_lnreturns*Week;
+run;
+
+
+
+/*Alternative Models*/
+
+/*A.PN*//*WasActuallyUsedinPAPEREquation1*/
+proc means data=try1;
+var POTNTR_lnreturns ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1;
+model POTNTR_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model POTNTR_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model POTNTR_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled/ normal godfrey reset chow=470;
+output out=testA_PN resid=ehat p=yhat;
+run;
+/*plotting returns(Y) over farm profitability(X)*/
+proc plot data=try1;
+plot POTNTR_lnreturns*ChangeinCornOverKScaled;
+run;
+proc plot data=try1;
+plot POTNTR_lnreturns*ChangeinSoyOverKScaled;
+run;
+
+
+/*A.I*//*WasActuallyUsedinPAPEREquation1*/
+proc means data=try1;
+var IPI_lnreturns ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1;
+model IPI_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model IPI_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model IPI_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled/ normal godfrey reset;
+output out=testA_I resid=ehat p=yhat;
+run;
+/*plotting returns(Y) over farm profitability(X)*/
+proc plot data=try1;
+plot IPI_lnreturns*ChangeinCornOverKScaled;
+run;
+proc plot data=try1;
+plot IPI_lnreturns*ChangeinSoyOverKScaled;
+run;
+
+
+/*A.M*//*WasActuallyUsedinPAPEREquation1*/
+proc means data=try1;
+var MOS_lnreturns ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1;
+model MOS_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model MOS_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model MOS_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled/ normal godfrey reset;
+output out=testA_M resid=ehat p=yhat;
+run;
+/*plotting returns(Y) over farm profitability(X)*/
+proc plot data=try1;
+plot MOS_lnreturns*ChangeinCornOverKScaled;
+run;
+proc plot data=try1;
+plot MOS_lnreturns*ChangeinSoyOverKScaled;
+run;
+
+/*A.S*//*WasActuallyUsedinPAPEREquation1*/
+proc means data=try1;
+var SQM_lnreturns ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1;
+model SQM_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model SQM_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model SQM_lnreturns= ChangeinKScaled ChangeinCornOverKScaled ChangeinSoyOverKScaled/ normal godfrey reset;
+output out=testA_S resid=ehat p=yhat;
+run;
+/*plotting returns(Y) over farm profitability(X)*/
+proc plot data=try1;
+plot SQM_lnreturns*ChangeinCornOverKScaled;
+run;
+proc plot data=try1;
+plot SQM_lnreturns*ChangeinSoyOverKScaled;
+run;
+
+
+/*B.PN*//*WasAppendixEquation2*/
+data try1;
+set try1;
+ logPN=log(POT_NTR);
+ logI=log(IPI);
+ logM=log(MOS);
+ logS=log(SQM);
+run;
+proc means data=try1;
+var logPN KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model logPN= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model logPN= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob data=hw8;
+model logPN= KpriceScaled CornOverKScaled SoyOverKScaled;
+output out=testB_PN resid=ehat p=yhat;
+run;
+
+/*B.I*//*WasAppendixEquation2*/
+proc means data=try1;
+var logI KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model logI= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model logI= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob data=hw8;
+model logI= KpriceScaled CornOverKScaled SoyOverKScaled;
+output out=testB_I resid=ehat p=yhat;
+run;
+
+/*B.M*//*WasAppendixEquation2*/
+proc means data=try1;
+var logM KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model logM= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model logM= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob data=hw8;
+model logM= KpriceScaled CornOverKScaled SoyOverKScaled;
+output out=testB_M resid=ehat p=yhat;
+run;
+
+/*B.S*//*WasAppendixEquation2*/
+proc means data=try1;
+var logS KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model logS= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model logS= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob data=hw8;
+model logS= KpriceScaled CornOverKScaled SoyOverKScaled;
+output out=testB_S resid=ehat p=yhat;
+run;
+
+
+/*C.PN*//*WasAppendixEquation3*/
+proc means data=try1;
+var POTNTR_lnreturns KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model POTNTR_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model POTNTR_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model POTNTR_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled/ normal godfrey reset chow=470;
+output out=testC_PN resid=ehat p=yhat;
+run;
+
+/*C.I*//*WasAppendixEquation3*/
+proc means data=try1;
+var IPI_lnreturns KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model IPI_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model IPI_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model IPI_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled/ normal godfrey reset;
+output out=testC_I resid=ehat p=yhat;
+run;
+
+/*C.M*//*WasAppendixEquation3*/
+proc means data=try1;
+var MOS_lnreturns KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model MOS_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model MOS_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model MOS_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled/ normal godfrey reset;
+output out=testC_M resid=ehat p=yhat;
+run;
+
+/*C.S*//*WasAppendixEquation3*/
+proc means data=try1;
+var SQM_lnreturns KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1;
+model SQM_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+proc reg data=try1 simple;
+model SQM_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled;
+plot predicted.*residual.;
+proc autoreg data=try1 archtest dwprob;
+model SQM_lnreturns= KpriceScaled CornOverKScaled SoyOverKScaled/ normal godfrey reset;
+output out=testC_S resid=ehat p=yhat;
+run;
+
+
+/*TESTS*/
+/*K2*/
+proc means data=testC_PN kurt skew; /*Proc means gives Fisher's g statistic*/
+var ehat;
+output out=K2Test kurt=g2 skew=g1;
+run;
+data K2Test; set K2Test;
+T=_freq_;
+sqrtb1= (T-2)*g1/sqrt(T*(T-1));/*converts Fisher's g statistic to square root of b1*/
+b2=(T-2)*(T-3)*g2/((T+1)*(T-1))+3*(T-1)/(T+1);
+Y=sqrtb1*sqrt((T+1)*(T+3)/((6*(T-2))));
+beta2=3*(T**2+27*T-70)*(T+1)*(T+3)/((T-2)*(T+5)*(T+7)*(T+9));
+Wsquared=-1+sqrt(2*(beta2-1));
+delta=1/sqrt(log(sqrt(Wsquared)));
+alpha=sqrt(2/(wsquared-1));
+zsqrtb1=delta*log(Y/alpha+sqrt((Y/alpha)**2));
+pskew=(1-probnorm(abs(zsqrtb1)))*2;/*assumes positive skewness*/
+eb2=3*(T-1)/(T+1);
+varb2=24*T*(T-2)*(T-3)/((T+1)*(T+1)*(T+3)*(T+5));
+x=(b2-eb2)/sqrt(varb2);
+beta1=6*(T**2-5*T+2)/((T+7)*(T+9))*sqrt(6*(T+3)*(T+5)/(T*(T-2)*(T-3)));
+A=6+8/beta1*(2/beta1+sqrt(1+4/beta1**2));
+zb2=((1-2/(9*A))-((1-2/A)/(1+x*sqrt(2/(A-4))))**(1/3))/sqrt(2/(9*a));
+pkurt=2*(1-PROBNORM(ABS(zb2)));/*assumes positive kurtosis*/
+k2=zsqrtb1*zsqrtb1+zb2*zb2;
+probk2=1-probchi(k2,2);
+proc print;
+var sqrtb1 zsqrtb1 pskew b2 zb2 pkurt k2 probk2;
+run;
+/*The Real Bera-Jarque*/
+data K2Test; set K2Test;
+T=_freq_;
+BJ=T/6*sqrtb1*sqrtb1+T/24*(b2-3)**2;
+probBJ=1-probchi(BJ,2);
+proc print;
+var BJ probBJ;
+run;
+
+/*prepping*/
+data moretests; set testC_PN;
+esquared= ehat*ehat;
+lagesqu=lag(esquared);
+lagehat=lag(ehat);
+KpriceScaled2=KpriceScaled*KpriceScaled;
+CornOverK2=CornOverKScaled*CornOverKScaled;
+SoyOverK2=SoyOverKScaled*SoyOverKScaled;
+KpriceScaledCornOverK=KpriceScaled*CornOverKScaled;
+KpriceScaledSoyOverK=KpriceScaled*SoyOverKScaled;
+CornOverKSoyOverK=CornOverKScaled*SoyOverKScaled;
+t+1;/*Creates a time trend to test parameter stability*/
+yhatsq=yhat*yhat;
+run;
+/*Joint Conditional Mean and Variance*/
+/*Joint Tests*/
+/*Joint conditional mean*/
+proc reg data=moretests; 
+title 'Joint Conditional Mean';
+model ehat=lagehat t yhatsq KpriceScaled CornOverKScaled SoyOverKScaled KpriceScaled2 CornOverK2 SoyOverK2 KpriceScaledCornOverK KpriceScaledSoyOverK;
+test lagehat, t, yhatsq, KpriceScaled2, CornOverK2, SoyOverK2, KpriceScaledCornOverK, KpriceScaledSoyOverK;
+run;
+/*Joint conditional variance*/
+proc reg data=moretests;
+title 'Joint Conditional Variance';
+model esquared=lagesqu t yhatsq;
+test lagesqu, t, yhatsq; 
+run;
+
+/*Individuals*/
+/*Individual Conditional Mean~Temporal Dependence*/
+proc reg data=moretests;
+title 'Individual Conditional Mean~Temporal Dependence';
+model ehat=lagehat KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+/*Individual Conditional Mean~StructuralChange*/
+proc reg data=moretests;
+title 'Individual Conditional Mean~StructuralChange';
+model ehat= t      KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+/*Individual Conditional Mean~Nonlinearity*/
+proc reg data=moretests;
+title 'Individual Conditional Mean~Nonlinearity';
+model ehat= yhatsq KpriceScaled CornOverKScaled SoyOverKScaled;
+run;
+/*Individual Conditional Variance~Dynamic Hetero*/
+proc reg data=moretests;
+title 'Individual Conditional Variance~Dynamic Hetero';
+model esquared= lagesqu;
+run;
+/*Individual Conditional Variance~Structural Change*/
+proc reg data=moretests;
+title 'Individual Conditional Variance~Structural Change';
+model esquared= t;
+run;
+/*Individual Conditional Variance~Temporal Dependence*/
+proc reg data=moretests;
+title 'Individual Conditional Variance~Static Hetero';
+model esquared= yhatsq;
+run;
